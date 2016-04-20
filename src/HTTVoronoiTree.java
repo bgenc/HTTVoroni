@@ -17,6 +17,11 @@ public class HTTVoronoiTree
         return this.root;
     }
 
+    public HTTVoronoiTriangle getTriangle(float x, float y)
+    {
+        return this.root.getTriangle(x, y);
+    }
+
     public void draw(Graphics g)
     {
         this.root.draw(g);

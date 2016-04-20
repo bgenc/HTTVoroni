@@ -6,28 +6,42 @@ import java.awt.*;
 public class HTTVoronoiTriangle
 {
     private boolean isLeaf;
+    private int level;
     private HTTVoronoiTriangle children[];
     private HTTVoronoiPoint points[];
 
-    public HTTVoronoiTriangle(HTTVoronoiPoint p1, HTTVoronoiPoint p2, HTTVoronoiPoint p3)
+    public HTTVoronoiTriangle(HTTVoronoiPoint p1, HTTVoronoiPoint p2, HTTVoronoiPoint p3, int level)
     {
         this.isLeaf = true;
         this.points = new HTTVoronoiPoint[3];
         this.points[0] = p1;
         this.points[1] = p2;
         this.points[2] = p3;
+        this.level = level;
     }
 
+    /**
+     * Returns true if this triangle is not divided.
+     * @return True if this triangle is not divided.
+     */
     public boolean isLeaf()
     {
         return this.isLeaf;
     }
 
+    /**
+     * Returns true if this triangle has been divided into four smaller triangles.
+     * @return True if this triangle has been divided.
+     */
     public boolean hasChildren()
     {
         return !this.isLeaf;
     }
 
+    /**
+     * Divide this triangle into four smaller triangles.
+     * TODO this should check for global depth threshold
+     */
     public void divide()
     {
         assert this.isLeaf;
@@ -45,13 +59,18 @@ public class HTTVoronoiTriangle
         HTTVoronoiPoint p2_0 = new HTTVoronoiPoint(
                 (this.points[2].getX() + this.points[0].getX()) / 2,
                 (this.points[2].getY() + this.points[0].getY()) / 2);
-        this.children[0] = new HTTVoronoiTriangle(p0, p0_1, p2_0);
-        this.children[1] = new HTTVoronoiTriangle(p1, p1_2, p0_1);
-        this.children[2] = new HTTVoronoiTriangle(p2, p2_0, p1_2);
-        this.children[3] = new HTTVoronoiTriangle(p0_1, p1_2, p2_0);
+        this.children[0] = new HTTVoronoiTriangle(p0, p0_1, p2_0, level + 1);
+        this.children[1] = new HTTVoronoiTriangle(p1, p1_2, p0_1, level + 1);
+        this.children[2] = new HTTVoronoiTriangle(p2, p2_0, p1_2, level + 1);
+        this.children[3] = new HTTVoronoiTriangle(p0_1, p1_2, p2_0, level + 1);
         this.isLeaf = false;
     }
 
+    /**
+     * Draw this triangle on the given Graphics buffer. Also draw the children
+     * of this triangle if there exists any.
+     * @param g The Graphics buffer to draw on.
+     */
     public void draw(Graphics g)
     {
         for (int i = 0; i < points.length; i++)
@@ -63,5 +82,41 @@ public class HTTVoronoiTriangle
             for (int i = 0; i < this.children.length; i++)
                 this.children[i].draw(g);
         }
+    }
+
+    private boolean left(float a0, float a1, float b0, float b1, float c0, float c1)
+    {
+        float r = (0.5f * ((b0 - a0) * (c1 - a1) - (b1 - a1) * (c0 - a0)));
+        //System.out.println(r);
+        return r >= 0;
+    }
+
+    private boolean contains(float x, float y)
+    {
+        boolean b = !left(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(),x,y) &&
+                !left(points[1].getX(), points[1].getY(), points[2].getX(), points[2].getY(),x,y) &&
+                !left(points[2].getX(), points[2].getY(), points[0].getX(), points[0].getY(),x,y);
+        System.out.println(b);
+        return b;
+    }
+
+    public HTTVoronoiTriangle getTriangle(float x, float y) {
+        System.out.println("click");
+        if (this.contains(x, y)) {
+            if (this.isLeaf)
+                return this;
+            else {
+                int i = 0;
+                while (i < this.children.length) {
+                    HTTVoronoiTriangle tri = this.children[0].getTriangle(x, y);
+                    if (tri != null)
+                        return tri;
+                    else
+                        i++;
+                }
+                return null;
+            }
+        } else
+            return null;
     }
 }
