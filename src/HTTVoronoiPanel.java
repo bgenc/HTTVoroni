@@ -2,65 +2,71 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Vector;
 
 /**
  * Created by bgenc on 19/04/16.
  */
-public class HTTVoronoiPanel extends JPanel implements MouseListener {
-    private HTTVoronoiTree tree;
+public class HTTVoronoiPanel extends JPanel implements MouseListener
+{
+	private HTTVoronoiTree tree;
+	private Vector<HTTVoronoiSite> sites;
 
-    public HTTVoronoiPanel()
-    {
-        HTTVoronoiPoint p1 = new HTTVoronoiPoint(0, 0);
-        HTTVoronoiPoint p2 = new HTTVoronoiPoint(600, 0);
-        HTTVoronoiPoint p3 = new HTTVoronoiPoint(300, 600);
+	public HTTVoronoiPanel()
+	{
+		HTTVoronoiPoint p1 = new HTTVoronoiPoint(0, 0);
+		HTTVoronoiPoint p2 = new HTTVoronoiPoint(600, 0);
+		HTTVoronoiPoint p3 = new HTTVoronoiPoint(300, 600);
 
-        HTTVoronoiTriangle tri = new HTTVoronoiTriangle(p1, p2, p3, 0);
-        this.tree = new HTTVoronoiTree(tri);
+		HTTVoronoiTriangle tri = new HTTVoronoiTriangle(p1, p2, p3, 0);
+		this.tree = new HTTVoronoiTree(tri);
 
-        this.addMouseListener(this);
-    }
+		this.sites = new Vector<>();
 
-    public void paint(Graphics g)
-    {
-        super.paint(g);
-	    Graphics2D g2 = (Graphics2D)g;
-	    RenderingHints rh = new RenderingHints(
-			    RenderingHints.KEY_TEXT_ANTIALIASING,
-			    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-	    g2.setRenderingHints(rh);
-        g2.setColor(Color.black);
-        this.tree.draw(g2);
-    }
+		this.addMouseListener(this);
+	}
 
-    @Override
-    public void mouseClicked(MouseEvent e)
-    {
-        HTTVoronoiTriangle tri = this.tree.getTriangle(e.getX(), this.getHeight() - e
-              .getY());
-	    if (tri == null)
-		    return;
-        tri.divide();
-        this.repaint();
-    }
+	public void paint(Graphics g)
+	{
+		super.paint(g);
+		Graphics2D g2 = (Graphics2D) g;
+		RenderingHints rh = new RenderingHints(
+				RenderingHints.KEY_TEXT_ANTIALIASING,
+				RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+		g2.setRenderingHints(rh);
+		g2.setColor(Color.black);
+		this.tree.draw(g2);
+	}
 
-    @Override
-    public void mousePressed(MouseEvent e) {
+	@Override
+	public void mouseClicked(MouseEvent e)
+	{
+		int clickX = e.getX();
+		int clickY = this.getHeight() - e.getY();
 
-    }
+	}
 
-    @Override
-    public void mouseReleased(MouseEvent e) {
+	@Override
+	public void mousePressed(MouseEvent mouseEvent)
+	{
 
-    }
+	}
 
-    @Override
-    public void mouseEntered(MouseEvent e) {
+	@Override
+	public void mouseReleased(MouseEvent mouseEvent)
+	{
 
-    }
+	}
 
-    @Override
-    public void mouseExited(MouseEvent e) {
+	@Override
+	public void mouseEntered(MouseEvent e)
+	{
 
-    }
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e)
+	{
+
+	}
 }
