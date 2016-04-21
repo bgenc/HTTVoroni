@@ -73,10 +73,16 @@ public class HTTVoronoiTriangle
      */
     public void draw(Graphics g)
     {
+        int height = (int)g.getClipBounds().getHeight();
+
         for (int i = 0; i < points.length; i++)
-        g.drawLine(points[i].getIntX(), points[i].getIntY(),
-                points[(i + 1) % points.length].getIntX(),
-                points[(i+1)%points.length].getIntY());
+        {
+	        g.drawLine(points[i].getIntX(), height - points[i].getIntY(),
+	                   points[(i + 1) % points.length].getIntX(),
+	                   height - points[(i+1)%points.length].getIntY());
+	        //g.drawString(""+points[i], points[i].getIntX(), height - points[i].getIntY
+	        // ());
+        }
         if (this.hasChildren())
         {
             for (int i = 0; i < this.children.length; i++)
@@ -93,22 +99,20 @@ public class HTTVoronoiTriangle
 
     private boolean contains(float x, float y)
     {
-        boolean b = !left(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(),x,y) &&
-                !left(points[1].getX(), points[1].getY(), points[2].getX(), points[2].getY(),x,y) &&
-                !left(points[2].getX(), points[2].getY(), points[0].getX(), points[0].getY(),x,y);
-        System.out.println(b);
+        boolean b = left(points[0].getX(), points[0].getY(), points[1].getX(), points[1].getY(),x,y) &&
+                left(points[1].getX(), points[1].getY(), points[2].getX(), points[2].getY(),x,y) &&
+                left(points[2].getX(), points[2].getY(), points[0].getX(), points[0].getY(),x,y);
         return b;
     }
 
     public HTTVoronoiTriangle getTriangle(float x, float y) {
-        System.out.println("click");
         if (this.contains(x, y)) {
             if (this.isLeaf)
                 return this;
             else {
                 int i = 0;
                 while (i < this.children.length) {
-                    HTTVoronoiTriangle tri = this.children[0].getTriangle(x, y);
+                    HTTVoronoiTriangle tri = this.children[i].getTriangle(x, y);
                     if (tri != null)
                         return tri;
                     else
@@ -119,4 +123,9 @@ public class HTTVoronoiTriangle
         } else
             return null;
     }
+
+	public String toString()
+	{
+		return "[T:" + this.points[0] + ","+ this.points[1] + ","+ this.points[2] + "]";
+	}
 }

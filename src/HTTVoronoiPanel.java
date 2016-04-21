@@ -11,9 +11,9 @@ public class HTTVoronoiPanel extends JPanel implements MouseListener {
 
     public HTTVoronoiPanel()
     {
-        HTTVoronoiPoint p1 = new HTTVoronoiPoint(200, 0);
-        HTTVoronoiPoint p2 = new HTTVoronoiPoint(0, 400);
-        HTTVoronoiPoint p3 = new HTTVoronoiPoint(400, 400);
+        HTTVoronoiPoint p1 = new HTTVoronoiPoint(0, 0);
+        HTTVoronoiPoint p2 = new HTTVoronoiPoint(600, 0);
+        HTTVoronoiPoint p3 = new HTTVoronoiPoint(300, 600);
 
         HTTVoronoiTriangle tri = new HTTVoronoiTriangle(p1, p2, p3, 0);
         this.tree = new HTTVoronoiTree(tri);
@@ -24,13 +24,22 @@ public class HTTVoronoiPanel extends JPanel implements MouseListener {
     public void paint(Graphics g)
     {
         super.paint(g);
-        g.setColor(Color.black);
-        this.tree.draw(g);
+	    Graphics2D g2 = (Graphics2D)g;
+	    RenderingHints rh = new RenderingHints(
+			    RenderingHints.KEY_TEXT_ANTIALIASING,
+			    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+	    g2.setRenderingHints(rh);
+        g2.setColor(Color.black);
+        this.tree.draw(g2);
     }
 
     @Override
-    public void mouseClicked(MouseEvent e) {
-        HTTVoronoiTriangle tri = this.tree.getTriangle(e.getX(), e.getY());
+    public void mouseClicked(MouseEvent e)
+    {
+        HTTVoronoiTriangle tri = this.tree.getTriangle(e.getX(), this.getHeight() - e
+              .getY());
+	    if (tri == null)
+		    return;
         tri.divide();
         this.repaint();
     }

@@ -31,4 +31,9 @@ public class HTTVoronoiPoint
     {
         return (int)(this.y);
     }
+
+    public String toString()
+    {
+        return "(P:" + this.x + "," + this.y + ")";
+    }
 }
