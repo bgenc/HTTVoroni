@@ -6,7 +6,7 @@ import java.awt.*;
 public class HTTVoronoiTree
 {
 	private HTTVoronoiTriangle root;
-	public static final int DEPTH_THRESHOLD = 3;
+	public static final int DEPTH_THRESHOLD = 2;
 
 	public HTTVoronoiTree(HTTVoronoiTriangle tri)
 	{
@@ -23,9 +23,13 @@ public class HTTVoronoiTree
 		return this.root.getTriangle(x, y);
 	}
 
+	public boolean insert(HTTVoronoiSite s)
+	{
+		return this.root.insert(s);
+	}
+
 	public void draw(Graphics2D g)
 	{
 		this.root.draw(g);
-
 	}
 }

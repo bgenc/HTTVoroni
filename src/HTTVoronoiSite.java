@@ -12,11 +12,13 @@ public class HTTVoronoiSite extends HTTVoronoiPoint
 
 	private Color c;
 
-	public HTTVoronoiSite(float _x, float _y, float _w)
+	public HTTVoronoiSite(String _label, float _x, float _y, float _w)
 	{
-		super(_x, _y);
+		super(_label, _x, _y);
 		this.w = _w;
-		this.c = new Color((float)Math.random(), (float)Math.random(), (float)Math.random());
+		this.c = new Color((float)Math.random() * 0.8f,
+		                   (float)Math.random() * 0.8f,
+		                   (float)Math.random() * 0.8f);
 	}
 
 	public float getWeight()
@@ -24,9 +26,14 @@ public class HTTVoronoiSite extends HTTVoronoiPoint
 		return this.w;
 	}
 
+	public Color getColor()
+	{
+		return this.c;
+	}
+
 	public String toString()
 	{
-		return "(S:" + this.getX() + "," + this.getY() + "," + this.getWeight() + ")";
+		return "Site "  + this.getLabel();
 	}
 
 	public void draw(Graphics2D g2)
@@ -36,5 +43,7 @@ public class HTTVoronoiSite extends HTTVoronoiPoint
 		g2.fillOval(this.getIntX() - size/2,
 		            (int) (g2.getClipBounds().getHeight() - this.getIntY() - size/2),
 		            size, size);
+		g2.drawString(this.getLabel(), this.getIntX() - size/2,
+		            (int) (g2.getClipBounds().getHeight() - this.getIntY() - size/2));
 	}
 }

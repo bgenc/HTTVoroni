@@ -7,13 +7,20 @@ public class HTTVoronoiPoint
 {
 	private float x;
 	private float y;
+	private String label;
 	private HTTVoronoiSite owner;
 
-	public HTTVoronoiPoint(float _x, float _y)
+	public HTTVoronoiPoint(String _label, float _x, float _y)
 	{
+		this.label = _label;
 		this.x = _x;
 		this.y = _y;
 		this.owner = null;
+	}
+
+	String getLabel()
+	{
+		return this.label;
 	}
 
 	float getX()
@@ -36,6 +43,11 @@ public class HTTVoronoiPoint
 		return (int) (this.y);
 	}
 
+	HTTVoronoiSite getOwner()
+	{
+		return this.owner;
+	}
+
 	void setOwner(HTTVoronoiSite site)
 	{
 		this.owner = site;
@@ -51,9 +63,11 @@ public class HTTVoronoiPoint
 		return s.getWeight() / distance(s);
 	}
 
-	boolean testOwner(HTTVoronoiSite s)
+	boolean canBeOwnedBy(HTTVoronoiSite s)
 	{
 		if (this.owner == null)
+			return true;
+		else if (s == this.owner)
 			return true;
 		else if (effectOf(s) > effectOf(owner))
 			return true;
@@ -63,15 +77,26 @@ public class HTTVoronoiPoint
 
 	public void draw(Graphics2D g2)
 	{
-		int size = 4;
-		g2.setColor(Color.black);
+		int size = 6;
+		if (this.owner != null)
+			g2.setColor(this.owner.getColor());
+		else
+			g2.setColor(Color.black);
 		g2.fillOval(this.getIntX() - size/2,
 		            (int) (g2.getClipBounds().getHeight() - this.getIntY() - size/2),
 		            size, size);
+
+		if (this.owner == null)
+			g2.drawString(this.label + "(-)", this.getIntX() - size/2,
+			              (int) (g2.getClipBounds().getHeight() - this.getIntY() - size/2));
+		else
+			g2.drawString(this.label + "(" + this.owner.getLabel() + ")", this.getIntX() - size/2,
+		              (int) (g2.getClipBounds().getHeight() - this.getIntY() - size/2));
 	}
+
 
 	public String toString()
 	{
-		return "(P:" + this.x + "," + this.y + ")";
+		return "Point " + this.label;
 	}
 }

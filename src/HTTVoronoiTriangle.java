@@ -66,13 +66,13 @@ public class HTTVoronoiTriangle
 		HTTVoronoiPoint p0 = this.points[0];
 		HTTVoronoiPoint p1 = this.points[1];
 		HTTVoronoiPoint p2 = this.points[2];
-		HTTVoronoiPoint p0_1 = new HTTVoronoiPoint(
+		HTTVoronoiPoint p0_1 = new HTTVoronoiPoint(p0.getLabel() + "|" + p1.getLabel(),
 				(this.points[0].getX() + this.points[1].getX()) / 2,
 				(this.points[0].getY() + this.points[1].getY()) / 2);
-		HTTVoronoiPoint p1_2 = new HTTVoronoiPoint(
+		HTTVoronoiPoint p1_2 = new HTTVoronoiPoint(p1.getLabel() + "|" + p2.getLabel(),
 				(this.points[1].getX() + this.points[2].getX()) / 2,
 				(this.points[1].getY() + this.points[2].getY()) / 2);
-		HTTVoronoiPoint p2_0 = new HTTVoronoiPoint(
+		HTTVoronoiPoint p2_0 = new HTTVoronoiPoint(p2.getLabel() + "|" + p0.getLabel(),
 				(this.points[2].getX() + this.points[0].getX()) / 2,
 				(this.points[2].getY() + this.points[0].getY()) / 2);
 		this.children[0] = new HTTVoronoiTriangle(p0, p0_1, p2_0, level + 1);
@@ -94,12 +94,17 @@ public class HTTVoronoiTriangle
 
 		for (int i = 0; i < points.length; i++)
 		{
-			points[i].draw(g);
+			if (points[i].getOwner() == points[(i + 1) % points.length].getOwner() &&
+					points[i].getOwner() != null)
+				g.setColor(points[i].getOwner().getColor());
+			else
+				g.setColor(Color.black);
 			g.drawLine(points[i].getIntX(), height - points[i].getIntY(),
 			           points[(i + 1) % points.length].getIntX(),
 			           height - points[(i + 1) % points.length].getIntY());
 			//g.drawString(""+points[i], points[i].getIntX(), height - points[i].getIntY
 			// ());
+			points[i].draw(g);
 		}
 		if (this.hasChildren())
 		{
@@ -161,6 +166,59 @@ public class HTTVoronoiTriangle
 
 	public String toString()
 	{
-		return "[T:" + this.points[0] + "," + this.points[1] + "," + this.points[2] + "]";
+		return "Triangle " + this.points[0].getLabel() + "-" + this.points[1].getLabel()
+				+ "-" + this.points[2].getLabel();
+	}
+
+	public boolean insert(HTTVoronoiSite s)
+	{
+		System.out.println("Trying to insert " + s + " into " + this);
+		// How many points will change ownership?
+		int change = 0;
+
+		for (HTTVoronoiPoint p : points)
+		{
+			if (p.canBeOwnedBy(s))
+			{
+				System.out.println("  " + s + " now owns " + p);
+				p.setOwner(s);
+				change++;
+			}
+		}
+
+		System.out.println("  A total of " + change + " changes occurred.");
+
+		if (change == 0) //No change of ownership
+		{
+			return false;
+		}
+		else if (change == 3) // All points changed ownership
+		{
+			System.out.println("  Setting " + this + " as a leaf!");
+			this.children = null;
+			this.isLeaf = true;
+			return true;
+		}
+		else if (this.isDivisible())
+		{
+			System.out.println("  Dividing " + this);
+			if (this.isLeaf) // If this is already a leaf, then we divide it
+				this.divide();
+
+			// Insert all owner sites into all children
+			// TODO this may insert the same owner a few times which is bad
+			for (HTTVoronoiTriangle t : children)
+				for (HTTVoronoiPoint p : points)
+				{
+					t.insert(p.getOwner());
+				}
+
+			return true;
+		}
+		else
+		{
+			System.out.println("Whta the!");
+			return false;
+		}
 	}
 }
