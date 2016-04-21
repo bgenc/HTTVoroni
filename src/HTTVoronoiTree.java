@@ -23,7 +23,7 @@ public class HTTVoronoiTree
 		return this.root.getTriangle(x, y);
 	}
 
-	public void draw(Graphics g)
+	public void draw(Graphics2D g)
 	{
 		this.root.draw(g);
 

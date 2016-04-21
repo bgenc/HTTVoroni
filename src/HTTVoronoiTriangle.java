@@ -5,6 +5,7 @@ import java.awt.*;
  */
 public class HTTVoronoiTriangle
 {
+	private HTTVoronoiSite owner;
 	private boolean isLeaf;
 	private int level;
 	private HTTVoronoiTriangle children[];
@@ -13,6 +14,7 @@ public class HTTVoronoiTriangle
 	public HTTVoronoiTriangle(HTTVoronoiPoint p1, HTTVoronoiPoint p2, HTTVoronoiPoint p3,
 	                          int level)
 	{
+		this.owner = null;
 		this.isLeaf = true;
 		this.points = new HTTVoronoiPoint[3];
 		this.points[0] = p1;
@@ -41,17 +43,25 @@ public class HTTVoronoiTriangle
 		return !this.isLeaf;
 	}
 
+	public void setOwner(HTTVoronoiSite site)
+	{
+		this.owner = site;
+	}
+
+	/**
+	 * Check whether this triangle allows further division.
+	 * @return True if this triangle can be further divided.
+	 */
+	public boolean isDivisible()
+	{
+		return this.level != HTTVoronoiTree.DEPTH_THRESHOLD;
+	}
+
 	/**
 	 * Divide this triangle into four smaller triangles.
 	 */
 	public void divide()
 	{
-		if (this.level == HTTVoronoiTree.DEPTH_THRESHOLD)
-		{
-			System.out.println("Cannot divide any further. Threshold reached.");
-			return;
-		}
-
 		this.children = new HTTVoronoiTriangle[4];
 		HTTVoronoiPoint p0 = this.points[0];
 		HTTVoronoiPoint p1 = this.points[1];
@@ -78,12 +88,13 @@ public class HTTVoronoiTriangle
 	 *
 	 * @param g The Graphics buffer to draw on.
 	 */
-	public void draw(Graphics g)
+	void draw(Graphics2D g)
 	{
 		int height = (int) g.getClipBounds().getHeight();
 
 		for (int i = 0; i < points.length; i++)
 		{
+			points[i].draw(g);
 			g.drawLine(points[i].getIntX(), height - points[i].getIntY(),
 			           points[(i + 1) % points.length].getIntX(),
 			           height - points[(i + 1) % points.length].getIntY());
@@ -92,9 +103,9 @@ public class HTTVoronoiTriangle
 		}
 		if (this.hasChildren())
 		{
-			for (int i = 0; i < this.children.length; i++)
+			for (HTTVoronoiTriangle aChildren : this.children)
 			{
-				this.children[i].draw(g);
+				aChildren.draw(g);
 			}
 		}
 	}
@@ -108,16 +119,15 @@ public class HTTVoronoiTriangle
 
 	private boolean contains(float x, float y)
 	{
-		boolean b = left(points[0].getX(), points[0].getY(), points[1].getX(),
-		                 points[1].getY(), x, y) &&
+		return left(points[0].getX(), points[0].getY(), points[1].getX(),
+		            points[1].getY(), x, y) &&
 				left(points[1].getX(), points[1].getY(), points[2].getX(), points[2].getY(),
 				     x, y) &&
 				left(points[2].getX(), points[2].getY(), points[0].getX(), points[0].getY(),
 				     x, y);
-		return b;
 	}
 
-	public HTTVoronoiTriangle getTriangle(float x, float y)
+	HTTVoronoiTriangle getTriangle(float x, float y)
 	{
 		if (this.contains(x, y))
 		{

@@ -14,9 +14,9 @@ public class HTTVoronoiPanel extends JPanel implements MouseListener
 
 	public HTTVoronoiPanel()
 	{
-		HTTVoronoiPoint p1 = new HTTVoronoiPoint(0, 0);
-		HTTVoronoiPoint p2 = new HTTVoronoiPoint(600, 0);
-		HTTVoronoiPoint p3 = new HTTVoronoiPoint(300, 600);
+		HTTVoronoiPoint p1 = new HTTVoronoiPoint(20, 20);
+		HTTVoronoiPoint p2 = new HTTVoronoiPoint(580, 20);
+		HTTVoronoiPoint p3 = new HTTVoronoiPoint(300, 550);
 
 		HTTVoronoiTriangle tri = new HTTVoronoiTriangle(p1, p2, p3, 0);
 		this.tree = new HTTVoronoiTree(tri);
@@ -36,6 +36,11 @@ public class HTTVoronoiPanel extends JPanel implements MouseListener
 		g2.setRenderingHints(rh);
 		g2.setColor(Color.black);
 		this.tree.draw(g2);
+
+		// Draw the sites
+		g2.setColor(Color.blue);
+		for (HTTVoronoiSite s : sites)
+			s.draw(g2);
 	}
 
 	@Override
@@ -43,7 +48,9 @@ public class HTTVoronoiPanel extends JPanel implements MouseListener
 	{
 		int clickX = e.getX();
 		int clickY = this.getHeight() - e.getY();
-
+		HTTVoronoiSite site = new HTTVoronoiSite(clickX, clickY, 1.0f);
+		sites.add(site);
+		repaint();
 	}
 
 	@Override
